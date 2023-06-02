@@ -1,0 +1,14 @@
+{
+  "name": "iiif_download",
+  "version": "1.0.0",
+  "description": "IIIF images donwload",
+  "main": "main.js",
+  "scripts": {
+    "test": "node cmd.js 'https://figgy.princeton.edu/concern/scanned_resources/ae4d051e-5a74-46d1-a66a-619ea0b27390/manifest' './aaa' '4000' 5"
+  },
+  "keywords": [
+    "iiif"
+  ],
+  "author": "Ashung.hung@foxmail.com",
+  "license": "MIT"
+}
