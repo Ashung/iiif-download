@@ -1,14 +1,24 @@
 {
-  "name": "iiif_download",
+  "name": "iiif-download",
+  "discription": "Node.js scripts for download images from IIIF manifest.",
   "version": "1.0.0",
-  "description": "IIIF images donwload",
-  "main": "main.js",
-  "scripts": {
-    "test": "node cmd.js 'https://figgy.princeton.edu/concern/scanned_resources/ae4d051e-5a74-46d1-a66a-619ea0b27390/manifest' './aaa' '4000' 5"
-  },
-  "keywords": [
-    "iiif"
-  ],
   "author": "Ashung.hung@foxmail.com",
+  "main": "main.js",
+  "keywords": [
+    "iiif",
+    "download"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Ashung/iiif-download.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ashung/iiif-download/issues"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "types": "iiif-download.d.ts",
+  "module": "main.js",
   "license": "MIT"
 }
