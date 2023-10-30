@@ -1,7 +1,7 @@
 {
   "name": "iiif-download",
   "discription": "Node.js scripts for download images from IIIF manifest.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Ashung.hung@foxmail.com",
   "main": "main.js",
   "keywords": [
