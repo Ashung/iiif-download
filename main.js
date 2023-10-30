@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const https = require('node:https');
+const url = require('node:url');
 
 const defaultOutput = './disc';
 const defaultDowloadThreads = 10;
@@ -40,9 +41,20 @@ module.exports.downloadIIIF = async (manifest, output = defaultOutput, threads =
 module.exports.batchDownload = async (list, output = defaultOutput, rename = false, threads = defaultDowloadThreads) => {
     const length = String(list.length).length;
     const images = list.map((item, index) => {
-        let imageOutput = path.join(output, item.substring(item.lastIndexOf('/')));
+        let extname = item.substring(item.lastIndexOf('.')).toLowerCase();
+        let filename = item.substring(item.lastIndexOf('/') + 1, item.lastIndexOf('.'));
+        if (extname.startsWith('.jpeg')) {
+            extname = '.jpeg';
+        } else if (extname.startsWith('.png')) {
+            extname = '.png';
+        } else if (extname.startsWith('.webp')) {
+            extname = '.webp';
+        } else {
+            extname = '.jpg';
+        }
+        let imageOutput = path.join(output, filename + extname);
         if (rename) {
-            imageOutput = path.join(output, formatNumber(index + 1, length) + item.substring(item.lastIndexOf('.')))
+            imageOutput = path.join(output, formatNumber(index + 1, length) + extname);
         }
         return {
             url: item,
@@ -120,35 +132,24 @@ function download (url, output) {
         return;
     }
     return new Promise ((resolve, reject) => {
-        const protocol = url.charAt(4) === 's' ? https : http;
-        protocol.get(url, data => {
-            if (data.statusCode !== 200) {
-                console.error(`${url} \n Request Failed. Status Code: ${data.statusCode}.`);
-                return;
-            }
-            let buffers = [];
-            data.on('data', chunk => {
-                buffers.push(chunk);
-            });
-            data.on('end', () => {
-                let len = 0;
-                for (let i = 1; i < buffers.length; i++) {
-                    len += buffers[i].length;
-                }
-                let _data = Buffer.concat(buffers, len);
+        const client = url.charAt(4) === 's' ? https : http;
+        client.get(url, (res) => {
+            if (res.statusCode === 200) {
                 let folder = path.dirname(output);
                 if (!fs.existsSync(folder)) {
                     mkdir(folder);
                 }
-                fs.writeFile(output, _data, (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
+                res.pipe(fs.createWriteStream(output))
+                    .on('error', reject)
+                    .once('close', () => {
                         resolve(output);
                         console.log(output);
-                    }
-                });
-            });
+                    });
+            } else {
+                // Consume response data to free up memory
+                res.resume();
+                reject(new Error(`Request Failed With a Status Code: ${res.statusCode}`));
+            }
         });
     });
 }
